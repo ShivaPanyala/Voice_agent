@@ -40,3 +40,22 @@ def create_message(
             status_code=500,
             detail="Unable to save the message.",
         ) from exc
+
+
+@router.get("/", response_model=list[MessageResponse])
+def get_messages(
+    db: Session = Depends(get_db),
+):
+    try:
+        messages = (
+            db.query(Message)
+            .order_by(Message.id.desc())
+            .all()
+        )
+        return messages
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to retrieve messages.",
+        ) from exc
