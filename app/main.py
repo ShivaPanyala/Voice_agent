@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 
+from app.db.session import Base, engine
+from app.models.message import Message
+from app.models.clinic_settings import ClinicSettings
+
 from app.api.routes.messages import router as messages_router
 from app.api.routes.business import router as business_router
 
@@ -8,6 +12,11 @@ app = FastAPI(
     description="Backend for an AI-powered business receptionist.",
     version="1.0.0",
 )
+
+
+@app.on_event("startup")
+def create_tables():
+    Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
